@@ -1001,7 +1001,8 @@ const AdminDashboard = ({ products, setProducts, customers, setCustomers, priceS
                     <tr key={order.id} className="hover:bg-slate-50">
                       <td className="p-4 font-mono text-xs">{order.id}</td><td className="p-4">{order.customerName}</td><td className="p-4 font-bold">¥{order.total.toFixed(2)}</td>
                       <td className="p-4"><span className={`px-2 py-1 rounded text-xs font-bold ${getStatusColor(order.status)}`}>{order.status}</span></td>
-                      <td className="p-4">{order.status === 'Pending' && <Button variant="primary" className="py-1 px-3 text-xs" onClick={() => updateStatus(order.id, 'Production')}>确认</Button>}</td>
+                      {order.status === 'Pending' && <td className="p-4"> <Button variant="primary" className="py-1 px-3 text-xs" onClick={() => updateStatus(order.id, 'Production')}>确认排产</Button></td>}
+                      {order.status === 'Production' && <td className="p-4"> <Button variant="danger" className="py-1 px-3 text-xs" onClick={() => updateStatus(order.id, 'Completed')}>发货完成</Button></td>}
                     </tr>
                   ))}
                 </tbody>
