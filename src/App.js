@@ -1169,14 +1169,12 @@ const AdminDashboard = ({ products, setProducts, customers, setCustomers, priceS
                     <div className="flex flex-col gap-2 border-l pl-4 ml-2">
                       <Button
                         variant="ghost"
-                        className="p-2 h-8 w-8"
                         onClick={() => setEditingProduct(product)}
                       >
                         <SquarePen size={16} />
                       </Button>
                       <Button
-                        variant="ghost"
-                        className="p-2 h-8 w-8 text-red-400 hover:text-red-600 hover:bg-red-50"
+                        variant="danger"
                         onClick={() => handleDeleteProduct(product.id)}
                       >
                         <Trash2 size={16} />
