@@ -906,10 +906,11 @@ const AdminDashboard = ({ products, setProducts, customers, setCustomers, priceS
 
         <main className="p-6">
           {activeModule === 'dashboard' && (
-             // ... (Dashboard content remains the same)
             <div className="space-y-6">
-              <div className="grid grid-cols-4 gap-4">
-                <Card className="p-4 border-l-4 border-orange-500">
+              {/* 数据卡片区域 - 8个卡片 */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                {/* 今日销售额 */}
+                <Card className="p-4 border-l-4 border-orange-500 hover:shadow-md transition-shadow">
                   <div className="text-gray-500 text-xs uppercase font-bold">
                     今日销售额
                   </div>
@@ -920,7 +921,8 @@ const AdminDashboard = ({ products, setProducts, customers, setCustomers, priceS
                     <TrendingUp size={12} /> +12% 环比昨日
                   </div>
                 </Card>
-                <Card className="p-4 border-l-4 border-blue-500">
+                {/* 待处理订单 */}
+                <Card className="p-4 border-l-4 border-blue-500 hover:shadow-md transition-shadow">
                   <div className="text-gray-500 text-xs uppercase font-bold">
                     待处理订单
                   </div>
@@ -928,7 +930,8 @@ const AdminDashboard = ({ products, setProducts, customers, setCustomers, priceS
                     {pendingOrdersCount}
                   </div>
                 </Card>
-                <Card className="p-4 border-l-4 border-purple-500">
+                {/* 明日预计产能需求 */}
+                <Card className="p-4 border-l-4 border-purple-500 hover:shadow-md transition-shadow">
                   <div className="text-gray-500 text-xs uppercase font-bold">
                     明日预计产能需求
                   </div>
@@ -939,7 +942,8 @@ const AdminDashboard = ({ products, setProducts, customers, setCustomers, priceS
                     </span>
                   </div>
                 </Card>
-                <Card className="p-4 border-l-4 border-gray-500">
+                {/* 历史最高销量 */}
+                <Card className="p-4 border-l-4 border-gray-500 hover:shadow-md transition-shadow">
                   <div className="text-gray-500 text-xs uppercase font-bold">
                     历史最高销量
                   </div>
@@ -950,43 +954,269 @@ const AdminDashboard = ({ products, setProducts, customers, setCustomers, priceS
                     </span>
                   </div>
                 </Card>
+                {/* 本月销售额 */}
+                <Card className="p-4 border-l-4 border-red-500 hover:shadow-md transition-shadow">
+                  <div className="text-gray-500 text-xs uppercase font-bold">
+                    本月销售额
+                  </div>
+                  <div className="text-2xl font-bold mt-1">
+                    ¥{(totalSales * 30).toLocaleString()}
+                  </div>
+                  <div className="text-xs text-green-600 mt-2 flex items-center gap-1">
+                    <TrendingUp size={12} /> +8% 环比上月
+                  </div>
+                </Card>
+                {/* 累计订单数 */}
+                <Card className="p-4 border-l-4 border-green-500 hover:shadow-md transition-shadow">
+                  <div className="text-gray-500 text-xs uppercase font-bold">
+                    累计订单数
+                  </div>
+                  <div className="text-2xl font-bold mt-1">
+                    {orders.length}
+                  </div>
+                </Card>
+                {/* 平均客单价 */}
+                <Card className="p-4 border-l-4 border-yellow-500 hover:shadow-md transition-shadow">
+                  <div className="text-gray-500 text-xs uppercase font-bold">
+                    平均客单价
+                  </div>
+                  <div className="text-2xl font-bold mt-1">
+                    ¥{(orders.reduce((sum, order) => sum + order.total, 0) / orders.length).toFixed(2)}
+                  </div>
+                </Card>
+                {/* 热销产品数 */}
+                <Card className="p-4 border-l-4 border-indigo-500 hover:shadow-md transition-shadow">
+                  <div className="text-gray-500 text-xs uppercase font-bold">
+                    热销产品数
+                  </div>
+                  <div className="text-2xl font-bold mt-1">
+                    {products.length}
+                  </div>
+                </Card>
               </div>
 
+              {/* 销售趋势分析 */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <Card className="p-6">
+                  <h3 className="font-bold text-gray-700 mb-4 flex items-center gap-2">
+                    <TrendingUp size={18} />
+                    销售趋势分析
+                  </h3>
+                  <div className="space-y-4">
+                    <div className="flex gap-2">
+                      <button className="px-3 py-1 bg-orange-50 text-orange-600 rounded-full text-xs font-bold">日</button>
+                      <button className="px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-xs font-bold">周</button>
+                      <button className="px-3 py-1 bg-gray-100 text-gray-600 rounded-full text-xs font-bold">月</button>
+                    </div>
+                    <div className="h-64 bg-gray-50 rounded-lg p-4 flex items-end justify-around">
+                      {/* 模拟折线图数据 */}
+                      {[1200, 1500, 1300, 1800, 1600, 2000, 1900].map((value, index) => (
+                        <div key={index} className="flex flex-col items-center gap-2">
+                          <div 
+                            className="w-8 bg-orange-500 rounded-t-lg transition-all duration-300 hover:bg-orange-600"
+                            style={{ height: `${value / 20}px` }}
+                          ></div>
+                          <div className="text-xs text-gray-500">{index + 1}日</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </Card>
+
+                {/* 产品类别分析 */}
+                <Card className="p-6">
+                  <h3 className="font-bold text-gray-700 mb-4 flex items-center gap-2">
+                    <Package size={18} />
+                    产品类别分析
+                  </h3>
+                  <div className="flex items-center justify-around">
+                    {/* 模拟饼图 */}
+                    <div className="relative w-48 h-48">
+                      <div className="absolute inset-0 rounded-full bg-gradient-to-br from-orange-400 to-orange-600" style={{ clipPath: 'polygon(50% 50%, 50% 0%, 100% 0%, 100% 50%)' }}></div>
+                      <div className="absolute inset-0 rounded-full bg-gradient-to-br from-blue-400 to-blue-600" style={{ clipPath: 'polygon(50% 50%, 100% 50%, 100% 100%, 50% 100%)' }}></div>
+                      <div className="absolute inset-0 rounded-full bg-gradient-to-br from-purple-400 to-purple-600" style={{ clipPath: 'polygon(50% 50%, 50% 100%, 0% 100%, 0% 50%)' }}></div>
+                      <div className="absolute inset-0 rounded-full bg-gradient-to-br from-green-400 to-green-600" style={{ clipPath: 'polygon(50% 50%, 0% 50%, 0% 0%, 50% 0%)' }}></div>
+                      <div className="absolute inset-4 rounded-full bg-white flex items-center justify-center">
+                        <div className="text-center">
+                          <div className="text-2xl font-bold">¥{totalSales.toLocaleString()}</div>
+                          <div className="text-xs text-gray-500">总销售额</div>
+                        </div>
+                      </div>
+                    </div>
+                    {/* 类别图例 */}
+                    <div className="space-y-3">
+                      {[
+                        { name: '起酥类', color: 'bg-orange-500', value: '35%' },
+                        { name: '吐司类', color: 'bg-blue-500', value: '25%' },
+                        { name: '冷链甜点', color: 'bg-purple-500', value: '20%' },
+                        { name: '常温蛋糕', color: 'bg-green-500', value: '20%' }
+                      ].map((category, index) => (
+                        <div key={index} className="flex items-center gap-2">
+                          <div className={`w-3 h-3 rounded-full ${category.color}`}></div>
+                          <div className="text-sm flex justify-between w-28">
+                            <span>{category.name}</span>
+                            <span className="font-bold">{category.value}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </Card>
+              </div>
+
+              {/* 客户分析 */}
+              <Card className="p-6">
+                <h3 className="font-bold text-gray-700 mb-4 flex items-center gap-2">
+                  <Users size={18} />
+                  客户分析
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* 客户订单排名 */}
+                  <div>
+                    <h4 className="text-sm font-bold text-gray-600 mb-3">客户订单排名</h4>
+                    <div className="space-y-3">
+                      {customers.map((customer, index) => (
+                        <div key={index} className="flex items-center gap-3">
+                          <div className="w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center text-xs font-bold">{index + 1}</div>
+                          <div className="flex-1">
+                            <div className="text-sm font-medium">{customer.name}</div>
+                            <div className="text-xs text-gray-500">{customer.type}</div>
+                          </div>
+                          <div className="text-sm font-bold">{Math.floor(Math.random() * 20) + 5}单</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  {/* 客户类型分布 */}
+                  <div>
+                    <h4 className="text-sm font-bold text-gray-600 mb-3">客户类型分布</h4>
+                    <div className="space-y-3">
+                      {[
+                        { type: '连锁便利', count: 12, percentage: '60%', color: 'bg-blue-500' },
+                        { type: '超市', count: 5, percentage: '25%', color: 'bg-green-500' },
+                        { type: '餐饮', count: 3, percentage: '15%', color: 'bg-orange-500' }
+                      ].map((item, index) => (
+                        <div key={index}>
+                          <div className="flex justify-between text-sm mb-1">
+                            <span>{item.type}</span>
+                            <span className="font-bold">{item.count}家 ({item.percentage})</span>
+                          </div>
+                          <div className="w-full bg-gray-100 rounded-full h-2">
+                            <div className={`h-2 rounded-full ${item.color}`} style={{ width: item.percentage }}></div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </Card>
+
+              {/* 产品表现排行榜 */}
+              <Card className="p-6">
+                <h3 className="font-bold text-gray-700 mb-4 flex items-center gap-2">
+                  <TrendingUp size={18} />
+                  产品表现排行榜
+                </h3>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left">
+                    <thead>
+                      <tr className="border-b">
+                        <th className="py-3 px-4 text-sm font-bold text-gray-600">排名</th>
+                        <th className="py-3 px-4 text-sm font-bold text-gray-600">产品</th>
+                        <th className="py-3 px-4 text-sm font-bold text-gray-600">类别</th>
+                        <th className="py-3 px-4 text-sm font-bold text-gray-600">销售数量</th>
+                        <th className="py-3 px-4 text-sm font-bold text-gray-600">销售额</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {products.map((product, index) => (
+                        <tr key={index} className="border-b hover:bg-gray-50">
+                          <td className="py-3 px-4 text-sm">
+                            <div className="w-6 h-6 bg-orange-100 text-orange-600 rounded-full flex items-center justify-center text-xs font-bold">{index + 1}</div>
+                          </td>
+                          <td className="py-3 px-4 text-sm">
+                            <div className="flex items-center gap-2">
+                              <span className="text-2xl">{product.image}</span>
+                              <span className="font-medium">{product.name}</span>
+                            </div>
+                          </td>
+                          <td className="py-3 px-4 text-sm text-gray-600">{product.category}</td>
+                          <td className="py-3 px-4 text-sm font-bold">{Math.floor(Math.random() * 500) + 100}个</td>
+                          <td className="py-3 px-4 text-sm font-bold text-orange-600">¥{Math.floor(Math.random() * 5000) + 1000}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </Card>
+
+              {/* 产能分析 */}
               <Card className="p-6">
                 <h3 className="font-bold text-gray-700 mb-4 flex items-center gap-2">
                   <Calendar size={18} />
-                  明日销量预估 (基于历史订单习惯)
+                  产能分析
                 </h3>
-                <div className="space-y-4">
-                  {predictions.map((item, idx) => (
-                    <div key={idx}>
-                      <div className="flex justify-between text-sm mb-1">
-                        <span>{item.name}</span>
-                        <div className="flex gap-4">
-                          <span className="text-gray-400">
-                            历史均值: {item.actual}
-                          </span>
-                          <span className="font-bold text-orange-600">
-                            预测: {item.predicted}
-                          </span>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* 明日销量预估 */}
+                  <div>
+                    <h4 className="text-sm font-bold text-gray-600 mb-3">明日销量预估 (基于历史订单习惯)</h4>
+                    <div className="space-y-4">
+                      {predictions.map((item, idx) => (
+                        <div key={idx}>
+                          <div className="flex justify-between text-sm mb-1">
+                            <span>{item.name}</span>
+                            <div className="flex gap-4">
+                              <span className="text-gray-400">
+                                历史均值: {item.actual}
+                              </span>
+                              <span className="font-bold text-orange-600">
+                                预测: {item.predicted}
+                              </span>
+                            </div>
+                          </div>
+                          <div className="w-full bg-gray-100 rounded-full h-2.5 overflow-hidden">
+                            <div
+                              className="bg-gray-300 h-2.5 rounded-full inline-block"
+                              style={{ width: `${(item.actual / 100) * 100}%` }}
+                            ></div>
+                            <div
+                              className="bg-orange-500 h-2.5 rounded-r-full inline-block -ml-2 opacity-80"
+                              style={{
+                                width: `${
+                                  ((item.predicted - item.actual) / 100) * 100
+                                }%`,
+                              }}
+                            ></div>
+                          </div>
                         </div>
-                      </div>
-                      <div className="w-full bg-gray-100 rounded-full h-2.5 overflow-hidden">
-                        <div
-                          className="bg-gray-300 h-2.5 rounded-full inline-block"
-                          style={{ width: `${(item.actual / 100) * 100}%` }}
-                        ></div>
-                        <div
-                          className="bg-orange-500 h-2.5 rounded-r-full inline-block -ml-2 opacity-80"
-                          style={{
-                            width: `${
-                              ((item.predicted - item.actual) / 100) * 100
-                            }%`,
-                          }}
-                        ></div>
-                      </div>
+                      ))}
                     </div>
-                  ))}
+                  </div>
+                  {/* 产能利用率 */}
+                  <div>
+                    <h4 className="text-sm font-bold text-gray-600 mb-3">产能利用率</h4>
+                    <div className="space-y-4">
+                      {[
+                        { name: '今日', value: 85 },
+                        { name: '昨日', value: 78 },
+                        { name: '前日', value: 92 },
+                        { name: '上周同期', value: 88 }
+                      ].map((item, index) => (
+                        <div key={index}>
+                          <div className="flex justify-between text-sm mb-1">
+                            <span>{item.name}</span>
+                            <span className="font-bold text-orange-600">{item.value}%</span>
+                          </div>
+                          <div className="w-full bg-gray-100 rounded-full h-3 overflow-hidden">
+                            <div
+                              className="bg-gradient-to-r from-green-400 to-green-600 h-3 rounded-full transition-all duration-500"
+                              style={{ width: `${item.value}%` }}
+                            ></div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </Card>
             </div>
