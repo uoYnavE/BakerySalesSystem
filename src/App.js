@@ -24,11 +24,11 @@ import {
 
 // --- Mock Data & Initial State (模拟数据库与初始状态) ---
 const INITIAL_PRODUCTS = [
-  { id: 1, name: '法式羊角包', category: '起酥类', basePrice: 5.0, image: '🥐', leadTime: 2, description: '经典法式风味，层层酥脆，黄油香气浓郁。' },
-  { id: 2, name: '全麦切片吐司', category: '吐司类', basePrice: 8.0, image: '🍞', leadTime: 1, description: '健康首选，富含膳食纤维，口感柔软扎实。' },
-  { id: 3, name: '草莓奶油蛋糕', category: '冷链甜点', basePrice: 15.0, image: '🍰', leadTime: 3, description: '新鲜草莓搭配顺滑奶油，甜蜜的幸福滋味。' },
-  { id: 4, name: '肉松小贝', category: '常温蛋糕', basePrice: 4.0, image: '🥯', leadTime: 1, description: '满满肉松包裹绵软蛋糕，咸甜适中，回味无穷。' },
-  { id: 5, name: '手撕包', category: '面包', basePrice: 6.0, image: '🥖', leadTime: 2, description: '奶香浓郁，纹理清晰，手撕着吃更有趣。' },
+  { id: 1, name: '法式羊角包', category: '起酥类', basePrice: 5.0, image: '🥐', leadTime: 2, description: '经典法式风味，层层酥脆，黄油香气浓郁。', alias: '羊角包', isVisible: true, notes: '' },
+  { id: 2, name: '全麦切片吐司', category: '吐司类', basePrice: 8.0, image: '🍞', leadTime: 1, description: '健康首选，富含膳食纤维，口感柔软扎实。', alias: '全麦吐司', isVisible: true, notes: '' },
+  { id: 3, name: '草莓奶油蛋糕', category: '冷链甜点', basePrice: 15.0, image: '🍰', leadTime: 3, description: '新鲜草莓搭配顺滑奶油，甜蜜的幸福滋味。', alias: '草莓蛋糕', isVisible: true, notes: '' },
+  { id: 4, name: '肉松小贝', category: '常温蛋糕', basePrice: 4.0, image: '🥯', leadTime: 1, description: '满满肉松包裹绵软蛋糕，咸甜适中，回味无穷。', alias: '小贝', isVisible: true, notes: '' },
+  { id: 5, name: '手撕包', category: '面包', basePrice: 6.0, image: '🥖', leadTime: 2, description: '奶香浓郁，纹理清晰，手撕着吃更有趣。', alias: '手撕面包', isVisible: true, notes: '' },
 ];
 
 const INITIAL_CUSTOMERS = [
@@ -37,17 +37,88 @@ const INITIAL_CUSTOMERS = [
 ];
 
 const INITIAL_PRICE_STRATEGIES = {
-  // key: customerId, value: { productId: price }
-  101: { 1: 4.5, 2: 7.2, 3: 13.5, 4: 3.8 }, 
-  102: { 1: 4.0, 2: 6.8, 3: 12.0, 4: 3.5, 5: 5.0 }, 
+  // key: customerId, value: { productId: { price, alias, specs, isVisible } }
+  101: { 
+    1: { price: 4.5, alias: '羊角包', specs: '1个装', isVisible: true }, 
+    2: { price: 7.2, alias: '全麦吐司', specs: '400g/袋', isVisible: true }, 
+    3: { price: 13.5, alias: '草莓蛋糕', specs: '100g/个', isVisible: true }, 
+    4: { price: 3.8, alias: '肉松小贝', specs: '单个装', isVisible: true } 
+  }, 
+  102: { 
+    1: { price: 4.0, alias: '法式羊角包', specs: '5个装', isVisible: true }, 
+    2: { price: 6.8, alias: '全麦切片', specs: '800g/袋', isVisible: true }, 
+    3: { price: 12.0, alias: '草莓奶油蛋糕', specs: '200g/个', isVisible: true }, 
+    4: { price: 3.5, alias: '小贝', specs: '10个装', isVisible: true }, 
+    5: { price: 5.0, alias: '手撕面包', specs: '300g/个', isVisible: true } 
+  }, 
 };
 
 const INITIAL_ORDERS = [
-  { id: 'ORD-20231024-01', customerId: 101, customerName: '7-Eleven 连锁便利', total: 450.0, status: 'Production', deliveryDate: '2023-10-26', items: {1: 50, 2: 25, 4: 50} },
-  { id: 'ORD-20231024-02', customerId: 102, customerName: '沃尔玛超市', total: 1200.0, status: 'Completed', deliveryDate: '2023-10-27', items: {1: 100, 3: 50, 5: 100} },
-  { id: 'ORD-20231023-03', customerId: 101, customerName: '7-Eleven 连锁便利', total: 80.5, status: 'Completed', deliveryDate: '2023-10-25', items: {4: 20} },
-  { id: 'ORD-20231022-04', customerId: 102, customerName: '沃尔玛超市', total: 2500.0, status: 'Completed', deliveryDate: '2023-10-24', items: {2: 200, 3: 150} },
-  { id: 'ORD-20231029-05', customerId: 101, customerName: '7-Eleven 连锁便利', total: 300.0, status: 'Pending', deliveryDate: '2023-10-31', items: {1: 60} },
+  { 
+    id: 'ORD-20231024-01', 
+    customerId: 101, 
+    customerName: '7-Eleven 连锁便利', 
+    total: 450.0, 
+    status: 'Production', 
+    deliveryDate: '2023-10-26', 
+    notes: '需要提前1小时配送', 
+    items: { 
+      1: { quantity: 50, notes: '无特殊要求' }, 
+      2: { quantity: 25, notes: '需要新鲜一些' }, 
+      4: { quantity: 50, notes: '' } 
+    } 
+  },
+  { 
+    id: 'ORD-20231024-02', 
+    customerId: 102, 
+    customerName: '沃尔玛超市', 
+    total: 1200.0, 
+    status: 'Completed', 
+    deliveryDate: '2023-10-27', 
+    notes: '按正常流程配送', 
+    items: { 
+      1: { quantity: 100, notes: '' }, 
+      3: { quantity: 50, notes: '装饰需要更精美' }, 
+      5: { quantity: 100, notes: '' } 
+    } 
+  },
+  { 
+    id: 'ORD-20231023-03', 
+    customerId: 101, 
+    customerName: '7-Eleven 连锁便利', 
+    total: 80.5, 
+    status: 'Completed', 
+    deliveryDate: '2023-10-25', 
+    notes: '', 
+    items: { 
+      4: { quantity: 20, notes: '少放肉松' } 
+    } 
+  },
+  { 
+    id: 'ORD-20231022-04', 
+    customerId: 102, 
+    customerName: '沃尔玛超市', 
+    total: 2500.0, 
+    status: 'Completed', 
+    deliveryDate: '2023-10-24', 
+    notes: '周末促销用，提前一天备货', 
+    items: { 
+      2: { quantity: 200, notes: '' }, 
+      3: { quantity: 150, notes: '' } 
+    } 
+  },
+  { 
+    id: 'ORD-20231029-05', 
+    customerId: 101, 
+    customerName: '7-Eleven 连锁便利', 
+    total: 300.0, 
+    status: 'Pending', 
+    deliveryDate: '2023-10-31', 
+    notes: '', 
+    items: { 
+      1: { quantity: 60, notes: '多送5个作为样品' } 
+    } 
+  },
 ];
 
 // --- Utility Functions ---
@@ -97,12 +168,16 @@ const ProductQuantityInput = ({ product, price, currentQty, onQtyChange, isMobil
 
   const handleIncrement = () => onQtyChange(product.id, currentQty + 1);
   const handleDecrement = () => onQtyChange(product.id, Math.max(0, currentQty - 1));
+  
+  // 确保price是数字类型
+  const numericPrice = typeof price === 'object' ? price.price : parseFloat(price);
+  const displayPrice = isNaN(numericPrice) ? 0 : numericPrice;
 
   return (
     <div className="flex items-center gap-2">
       {/* 价格显示 */}
       <div className="text-orange-600 font-bold text-xl">
-        ¥{price.toFixed(2)} 
+        ¥{displayPrice.toFixed(2)} 
         <span className="text-sm text-gray-400 font-normal ml-1">/个</span>
       </div>
       
@@ -137,7 +212,17 @@ const ProductQuantityInput = ({ product, price, currentQty, onQtyChange, isMobil
 /**
  * 客户端产品卡片 (使用数量输入代替+/-按钮)
  */
-const ProductCard = ({ product, price, cartQty, onQtyChange, isMobile = false }) => {
+const ProductCard = ({ product, price, cart, onCartChange, isMobile = false }) => {
+  const cartItem = cart[product.id] || { quantity: 0, notes: '' };
+  
+  const handleQtyChange = (newQty) => {
+    onCartChange(product.id, { ...cartItem, quantity: newQty });
+  };
+  
+  const handleNotesChange = (e) => {
+    onCartChange(product.id, { ...cartItem, notes: e.target.value });
+  };
+  
   return (
     <Card className={`p-4 flex gap-4 relative ${isMobile ? 'flex-col' : 'flex-row'}`}>
       <div className={`shrink-0 ${isMobile ? 'w-full h-24' : 'w-20 h-20'} bg-gray-100 rounded-lg flex items-center justify-center text-3xl`}>
@@ -154,14 +239,26 @@ const ProductCard = ({ product, price, cartQty, onQtyChange, isMobile = false })
           </p>
         </div>
 
-        <div className={`mt-3 pt-3 border-t`}>
+        <div className={`mt-3 pt-3 border-t space-y-3`}>
           <ProductQuantityInput 
             product={product} 
             price={price} 
-            currentQty={cartQty} 
-            onQtyChange={onQtyChange} 
+            currentQty={cartItem.quantity} 
+            onQtyChange={handleQtyChange} 
             isMobile={isMobile} 
           />
+          <div>
+            <label className="block text-xs font-bold text-gray-700 mb-1">
+              商品备注
+            </label>
+            <textarea
+              value={cartItem.notes}
+              onChange={handleNotesChange}
+              rows={2}
+              className="w-full border rounded-lg p-2 text-sm outline-none focus:ring-2 focus:ring-orange-200"
+              placeholder="输入商品备注..."
+            />
+          </div>
         </div>
       </div>
     </Card>
@@ -171,16 +268,27 @@ const ProductCard = ({ product, price, cartQty, onQtyChange, isMobile = false })
 const OrderDetailsModal = ({ order, products, priceList, onClose }) => {
   if (!order) return null;
 
-  const orderItems = Object.entries(order.items).map(([pid, qty]) => {
+  const orderItems = Object.entries(order.items).map(([pid, item]) => {
     const productId = parseInt(pid);
     const product = products.find(p => p.id === productId);
-    const price = priceList[productId] || product?.basePrice || 0; 
+    
+    // 兼容新旧价格列表格式
+    const priceData = typeof priceList[productId] === 'object' ? priceList[productId] : { price: priceList[productId] };
+    const price = priceData.price || product?.basePrice || 0;
+    const alias = priceData.alias || product?.name || '未知商品';
+    
+    // 兼容新旧订单项目格式
+    const quantity = typeof item === 'object' ? item.quantity : item;
+    const notes = typeof item === 'object' ? item.notes || '' : '';
+    
     return {
       productName: product?.name || '未知商品',
+      alias: alias,
       image: product?.image || '❓',
-      qty: qty,
+      quantity: quantity,
       price: price,
-      subtotal: price * qty
+      notes: notes,
+      subtotal: price * quantity
     };
   });
 
@@ -210,24 +318,43 @@ const OrderDetailsModal = ({ order, products, priceList, onClose }) => {
             </div>
           </div>
           
+          {order.notes && (
+            <div className="bg-blue-50 p-3 rounded-lg border border-blue-200">
+              <p className="text-xs text-blue-800 font-bold mb-1">订单备注</p>
+              <p className="text-sm text-blue-700">{order.notes}</p>
+            </div>
+          )}
+          
           <h4 className="font-bold text-lg text-gray-700 border-b pb-2">商品清单 ({orderItems.length} 项)</h4>
           <div className="space-y-3">
             {orderItems.map((item, index) => (
-              <div key={index} className="flex justify-between items-center border-b pb-3 last:border-b-0 last:pb-0">
-                <div className="flex items-center gap-3">
-                  <span className="text-2xl">{item.image}</span>
-                  <p className="text-base font-medium">{item.productName}</p>
+              <div key={index} className="border-b pb-3 last:border-b-0 last:pb-0">
+                <div className="flex justify-between items-center mb-2">
+                  <div className="flex items-center gap-3">
+                    <span className="text-2xl">{item.image}</span>
+                    <div>
+                      <p className="text-base font-medium">{item.productName}</p>
+                      {item.alias !== item.productName && (
+                        <p className="text-xs text-gray-500">{item.alias}</p>
+                      )}
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-base font-bold text-gray-800">¥{item.subtotal}</p>
+                    <p className="text-sm text-gray-500">{item.quantity} 件 @ ¥{item.price}</p>
+                  </div>
                 </div>
-                <div className="text-right">
-                  <p className="text-base font-bold text-gray-800">¥{item.subtotal.toFixed(2)}</p>
-                  <p className="text-sm text-gray-500">{item.qty} 件 @ ¥{item.price.toFixed(2)}</p>
-                </div>
+                {item.notes && (
+                  <div className="ml-14 text-sm text-gray-600 bg-gray-50 p-2 rounded">
+                    <span className="text-xs font-semibold text-gray-500">备注: </span>{item.notes}
+                  </div>
+                )}
               </div>
             ))}
           </div>
 
           <div className="border-t pt-4 text-right">
-            <p className="text-2xl font-extrabold text-orange-600">总计: ¥{order.total.toFixed(2)}</p>
+            <p className="text-2xl font-extrabold text-orange-600">总计: ¥{order.total}</p>
           </div>
 
         </div>
@@ -262,7 +389,7 @@ const ClientOrdersHistory = ({ user, orders, products, priceList }) => {
                  </Card>
                  <Card className="p-5 bg-orange-50 border-orange-200 text-center">
                      <p className="text-sm text-orange-700 font-medium truncate">累计消费 (¥)</p>
-                     <p className="text-3xl font-bold text-orange-800 mt-1">{totalSpent.toFixed(2)}</p>
+                     <p className="text-3xl font-bold text-orange-800 mt-1">{totalSpent}</p>
                  </Card>
                  <Card className="p-5 bg-green-50 border-green-200 text-center">
                      <p className="text-sm text-green-700 font-medium truncate">已完成订单</p>
@@ -286,7 +413,7 @@ const ClientOrdersHistory = ({ user, orders, products, priceList }) => {
                                 </span>
                             </div>
                             <div className="text-right space-y-1">
-                                <span className="font-mono text-xl text-orange-600 font-extrabold block">¥{order.total.toFixed(2)}</span>
+                                <span className="font-mono text-xl text-orange-600 font-extrabold block">¥{order.total}</span>
                                 <span className="text-sm text-gray-500 block">交付日期: {order.deliveryDate}</span>
                             </div>
                             
@@ -317,31 +444,59 @@ const ClientAppDesktop = ({ user, products, priceList, onPlaceOrder, orders }) =
   const [cart, setCart] = useState({});
   const [activeTab, setActiveTab] = useState('shop'); 
 
-  const availableProducts = products.filter(p => priceList[p.id] !== undefined || p.basePrice !== undefined);
+  // 筛选可见商品，根据客户设置
+  const availableProducts = products.filter(p => {
+    // 兼容新旧价格列表格式
+    const productSetting = typeof priceList[p.id] === 'object' ? priceList[p.id] : { price: priceList[p.id] };
+    // 如果没有特定设置或设置为可见，则显示
+    return (!productSetting || productSetting.isVisible !== false) && 
+           (productSetting.price || p.basePrice !== undefined);
+  });
 
-  const handleQtyChange = (productId, qty) => {
+  // 处理购物车变化，支持数量和备注
+  const handleCartChange = (productId, cartItem) => {
     setCart(prev => {
       const newCart = { ...prev };
-      if (qty > 0) newCart[productId] = qty;
-      else delete newCart[productId];
+      if (cartItem.quantity > 0) {
+        newCart[productId] = cartItem;
+      } else {
+        delete newCart[productId];
+      }
       return newCart;
     });
   };
 
+  // 计算购物车总计
   const cartTotal = useMemo(() => {
-    return Object.entries(cart).reduce((sum, [pid, qty]) => {
-      const price = priceList[pid] || products.find(p => p.id === parseInt(pid))?.basePrice || 0;
-      return sum + (price * qty);
+    return Object.entries(cart).reduce((sum, [pid, item]) => {
+      const productId = parseInt(pid);
+      // 兼容新旧价格列表格式
+      const priceData = typeof priceList[productId] === 'object' ? priceList[productId] : { price: priceList[productId] };
+      const price = priceData.price || products.find(p => p.id === productId)?.basePrice || 0;
+      return sum + (price * item.quantity);
     }, 0);
   }, [cart, priceList, products]);
 
-  const totalCartItems = Object.values(cart).reduce((a, b) => a + b, 0);
-  const cartItemsArray = useMemo(() => Object.entries(cart).map(([pid, qty]) => ({
-      pid: parseInt(pid), 
-      qty,
-      product: products.find(p => p.id === parseInt(pid)),
-      price: priceList[pid] || products.find(p => p.id === parseInt(pid))?.basePrice || 0
-  })).filter(item => item.qty > 0), [cart, products, priceList]);
+  // 计算购物车总数量
+  const totalCartItems = Object.values(cart).reduce((a, b) => a + b.quantity, 0);
+  
+  // 购物车项目数组
+  const cartItemsArray = useMemo(() => Object.entries(cart).map(([pid, item]) => {
+      const productId = parseInt(pid);
+      const product = products.find(p => p.id === productId);
+      // 兼容新旧价格列表格式
+      const priceData = typeof priceList[productId] === 'object' ? priceList[productId] : { price: priceList[productId] };
+      const price = priceData.price || product?.basePrice || 0;
+      const alias = priceData.alias || product?.name || '未知商品';
+      return {
+        pid: productId, 
+        quantity: item.quantity,
+        notes: item.notes,
+        product: product,
+        price: price,
+        alias: alias
+      };
+  }).filter(item => item.quantity > 0), [cart, products, priceList]);
 
   const handleCheckout = () => {
     if (Object.keys(cart).length === 0) return;
@@ -350,9 +505,11 @@ const ClientAppDesktop = ({ user, products, priceList, onPlaceOrder, orders }) =
       customerName: user.name,
       items: cart,
       total: cartTotal,
-      deliveryDate: new Date(Date.now() + 86400000 * 2).toISOString().split('T')[0]
+      deliveryDate: new Date(Date.now() + 86400000 * 2).toISOString().split('T')[0],
+      notes: orderNotes
     });
     setCart({});
+    setOrderNotes('');
     setActiveTab('orders');
   };
   
@@ -372,6 +529,8 @@ const ClientAppDesktop = ({ user, products, priceList, onPlaceOrder, orders }) =
     </button>
   );
 
+  const [orderNotes, setOrderNotes] = useState('');
+
   const CartSummary = () => (
      <Card className="p-6 h-fit sticky top-20 shadow-lg border-b-4 border-orange-500">
         <h3 className="font-bold text-lg text-gray-700 border-b pb-3 mb-4">订单信息摘要 ({totalCartItems} 件)</h3>
@@ -380,16 +539,34 @@ const ClientAppDesktop = ({ user, products, priceList, onPlaceOrder, orders }) =
         ) : (
             <div className="space-y-3 max-h-64 overflow-y-auto pr-2 mb-4">
                 {cartItemsArray.map(item => (
-                    <div key={item.pid} className="flex justify-between items-center text-sm border-b pb-2 last:border-b-0">
-                        <span className="font-medium text-gray-700">{item.product.name}</span>
-                        <span className="text-right">
-                           <span className="font-bold text-orange-600">¥{(item.price * item.qty).toFixed(2)}</span>
-                           <span className="text-xs text-gray-500 block">({item.qty}件)</span>
-                        </span>
+                    <div key={item.pid} className="text-sm border-b pb-2 last:border-b-0">
+                        <div className="flex justify-between items-center">
+                            <span className="font-medium text-gray-700">{item.alias}</span>
+                            <span className="font-bold text-orange-600">¥{(item.price * item.quantity)}</span>
+                        </div>
+                        <div className="flex justify-between items-center mt-1">
+                            <span className="text-xs text-gray-500">{item.quantity}件 @ ¥{item.price}</span>
+                            {item.notes && (
+                                <span className="text-xs text-gray-600 bg-gray-50 px-1.5 py-0.5 rounded">备注: {item.notes}</span>
+                            )}
+                        </div>
                     </div>
                 ))}
             </div>
         )}
+        
+        <div className="mt-4">
+          <label className="block text-sm font-bold text-gray-700 mb-1">
+            订单备注
+          </label>
+          <textarea
+            value={orderNotes}
+            onChange={(e) => setOrderNotes(e.target.value)}
+            rows={3}
+            className="w-full border rounded-lg p-2 text-sm outline-none focus:ring-2 focus:ring-orange-200"
+            placeholder="输入订单备注..."
+          />
+        </div>
         
         <div className="flex items-center gap-2 text-gray-600 mt-4">
           <MapPin size={16} className="text-orange-500" />
@@ -397,7 +574,7 @@ const ClientAppDesktop = ({ user, products, priceList, onPlaceOrder, orders }) =
         </div>
         <div className="flex justify-between border-t pt-4 mt-4">
            <span className="font-bold text-xl">订单总计</span>
-           <span className="text-orange-600 font-extrabold text-2xl">¥{cartTotal.toFixed(2)}</span>
+           <span className="text-orange-600 font-extrabold text-2xl">¥{cartTotal}</span>
         </div>
         <Button onClick={handleCheckout} disabled={cartTotal === 0} className="w-full py-3 text-lg mt-6">
           <ClipboardList size={20} /> 提交订单
@@ -426,13 +603,24 @@ const ClientAppDesktop = ({ user, products, priceList, onPlaceOrder, orders }) =
           <h2 className="text-xl font-bold text-slate-700">
             {activeTab === 'shop' ? '订货中心' : '我的订单记录'}
           </h2>
-          <div className="text-sm text-gray-500 flex items-center gap-4">
-             <div className="hidden sm:block">
-                 <span className="font-bold text-gray-700">{user.name}</span> | <span className="ml-1 text-xs">欢迎您</span>
-             </div>
-             <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-bold">
-               账期: {user.billing}
-             </div>
+          <div className="flex items-center gap-4">
+            {activeTab === 'shop' && (
+              <Button
+                onClick={() => alert('导入Excel功能开发中...')}
+                variant="outline"
+                className="text-sm"
+              >
+                <FileText size={16} /> 导入Excel出货单
+              </Button>
+            )}
+            <div className="text-sm text-gray-500 flex items-center gap-4">
+              <div className="hidden sm:block">
+                  <span className="font-bold text-gray-700">{user.name}</span> | <span className="ml-1 text-xs">欢迎您</span>
+              </div>
+              <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-bold">
+                账期: {user.billing}
+              </div>
+            </div>
           </div>
         </header>
 
@@ -447,14 +635,20 @@ const ClientAppDesktop = ({ user, products, priceList, onPlaceOrder, orders }) =
                 </div>
                 <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
                   {availableProducts.map(product => {
-                     const price = priceList[product.id] || product.basePrice;
+                     // 兼容新旧价格列表格式
+                     const priceData = typeof priceList[product.id] === 'object' ? priceList[product.id] : { price: priceList[product.id] };
+                     const price = priceData.price || product.basePrice;
+                     const displayName = priceData.alias || product.name;
                      return (
                         <ProductCard 
                           key={product.id}
-                          product={product}
+                          product={{
+                            ...product,
+                            name: displayName
+                          }}
                           price={price}
-                          cartQty={cart[product.id] || 0}
-                          onQtyChange={handleQtyChange}
+                          cart={cart}
+                          onCartChange={handleCartChange}
                           isMobile={false} // Desktop mode
                         />
                      )
@@ -484,26 +678,43 @@ const ClientAppDesktop = ({ user, products, priceList, onPlaceOrder, orders }) =
 const ClientAppMobile = ({ user, products, priceList, onPlaceOrder, orders }) => { 
   const [cart, setCart] = useState({});
   const [activeTab, setActiveTab] = useState('shop');
+  const [orderNotes, setOrderNotes] = useState('');
 
-  const availableProducts = products.filter(p => priceList[p.id] !== undefined || p.basePrice !== undefined);
+  // 筛选可见商品，根据客户设置
+  const availableProducts = products.filter(p => {
+    // 兼容新旧价格列表格式
+    const productSetting = typeof priceList[p.id] === 'object' ? priceList[p.id] : { price: priceList[p.id] };
+    // 如果没有特定设置或设置为可见，则显示
+    return (!productSetting || productSetting.isVisible !== false) && 
+           (productSetting.price || p.basePrice !== undefined);
+  });
 
-  const handleQtyChange = (productId, qty) => {
+  // 处理购物车变化，支持数量和备注
+  const handleCartChange = (productId, cartItem) => {
     setCart(prev => {
       const newCart = { ...prev };
-      if (qty > 0) newCart[productId] = qty;
-      else delete newCart[productId];
+      if (cartItem.quantity > 0) {
+        newCart[productId] = cartItem;
+      } else {
+        delete newCart[productId];
+      }
       return newCart;
     });
   };
 
+  // 计算购物车总计
   const cartTotal = useMemo(() => {
-    return Object.entries(cart).reduce((sum, [pid, qty]) => {
-      const price = priceList[pid] || products.find(p => p.id === parseInt(pid))?.basePrice || 0;
-      return sum + (price * qty);
+    return Object.entries(cart).reduce((sum, [pid, item]) => {
+      const productId = parseInt(pid);
+      // 兼容新旧价格列表格式
+      const priceData = typeof priceList[productId] === 'object' ? priceList[productId] : { price: priceList[productId] };
+      const price = priceData.price || products.find(p => p.id === productId)?.basePrice || 0;
+      return sum + (price * item.quantity);
     }, 0);
   }, [cart, priceList, products]);
 
-  const totalCartItems = Object.values(cart).reduce((a, b) => a + b, 0);
+  // 计算购物车总数量
+  const totalCartItems = Object.values(cart).reduce((a, b) => a + b.quantity, 0);
 
   const handleCheckout = () => {
     if (Object.keys(cart).length === 0) return;
@@ -512,9 +723,11 @@ const ClientAppMobile = ({ user, products, priceList, onPlaceOrder, orders }) =>
       customerName: user.name,
       items: cart,
       total: cartTotal,
-      deliveryDate: new Date(Date.now() + 86400000 * 2).toISOString().split('T')[0]
+      deliveryDate: new Date(Date.now() + 86400000 * 2).toISOString().split('T')[0],
+      notes: orderNotes
     });
     setCart({});
+    setOrderNotes('');
     setActiveTab('orders');
   };
 
@@ -553,14 +766,20 @@ const ClientAppMobile = ({ user, products, priceList, onPlaceOrder, orders }) =>
               </div>
             <div className="grid grid-cols-1 gap-4">
               {availableProducts.map(product => {
-                 const price = priceList[product.id] || product.basePrice;
+                 // 兼容新旧价格列表格式
+                 const priceData = typeof priceList[product.id] === 'object' ? priceList[product.id] : { price: priceList[product.id] };
+                 const price = priceData.price || product.basePrice;
+                 const displayName = priceData.alias || product.name;
                  return (
                     <ProductCard 
                       key={product.id}
-                      product={product}
+                      product={{
+                        ...product,
+                        name: displayName
+                      }}
                       price={price}
-                      cartQty={cart[product.id] || 0}
-                      onQtyChange={handleQtyChange}
+                      cart={cart}
+                      onCartChange={handleCartChange}
                       isMobile={true}
                     />
                  )
@@ -579,21 +798,32 @@ const ClientAppMobile = ({ user, products, priceList, onPlaceOrder, orders }) =>
                  </div>
                ) : (
                  <Card className="p-4 space-y-3">
-                     {Object.entries(cart).map(([pid, qty]) => {
-                       const p = products.find(i => i.id === parseInt(pid));
-                       const price = priceList[pid] || p?.basePrice || 0;
+                     {Object.entries(cart).map(([pid, item]) => {
+                       const productId = parseInt(pid);
+                       const p = products.find(i => i.id === productId);
+                       // 兼容新旧价格列表格式
+                       const priceData = typeof priceList[productId] === 'object' ? priceList[productId] : { price: priceList[productId] };
+                       const price = priceData.price || p?.basePrice || 0;
+                       const alias = priceData.alias || p?.name || '未知商品';
                        return (
-                         <div key={pid} className="flex justify-between items-center border-b pb-3 last:border-b-0 last:pb-0">
-                           <div className="flex items-center gap-3">
-                             <span className="text-xl">{p.image}</span>
-                             <div className="flex-1">
-                               <div className="text-base font-medium text-gray-800">{p.name}</div>
-                               <div className="text-sm text-gray-500">¥{price.toFixed(2)}</div>
+                         <div key={pid} className="border-b pb-3 last:border-b-0 last:pb-0">
+                           <div className="flex justify-between items-center">
+                             <div className="flex items-center gap-3">
+                               <span className="text-xl">{p.image}</span>
+                               <div className="flex-1">
+                                 <div className="text-base font-medium text-gray-800">{alias}</div>
+                                 <div className="text-sm text-gray-500">¥{price}</div>
+                               </div>
+                             </div>
+                             <div className="flex items-center gap-3">
+                               <div className="font-bold text-lg text-orange-600 w-16 text-right">¥{(price * item.quantity)}</div>
                              </div>
                            </div>
-                           <div className="flex items-center gap-3">
-                             <div className="font-bold text-lg text-orange-600 w-16 text-right">¥{(price * qty).toFixed(2)}</div>
-                           </div>
+                           {item.notes && (
+                             <div className="ml-14 text-sm text-gray-600 bg-gray-50 p-2 rounded mt-1">
+                               <span className="text-xs font-semibold text-gray-500">备注: </span>{item.notes}
+                             </div>
+                           )}
                          </div>
                        );
                      })}
@@ -603,15 +833,29 @@ const ClientAppMobile = ({ user, products, priceList, onPlaceOrder, orders }) =>
                    </Card>
                )}
                {Object.keys(cart).length > 0 && (
-                   <Card className="p-4 border-t-4 border-orange-500">
+                   <div className="space-y-4">
+                     <Card className="p-4">
+                       <label className="block text-sm font-bold text-gray-700 mb-1">
+                         订单备注
+                       </label>
+                       <textarea
+                         value={orderNotes}
+                         onChange={(e) => setOrderNotes(e.target.value)}
+                         rows={3}
+                         className="w-full border rounded-lg p-2 text-sm outline-none focus:ring-2 focus:ring-orange-200"
+                         placeholder="输入订单备注..."
+                       />
+                     </Card>
+                     <Card className="p-4 border-t-4 border-orange-500">
                       <div className="flex justify-between items-center mb-4">
                          <span className="text-xl font-bold">总计金额</span>
-                         <span className="text-3xl font-extrabold text-orange-600">¥{cartTotal.toFixed(2)}</span>
+                         <span className="text-3xl font-extrabold text-orange-600">¥{cartTotal}</span>
                       </div>
                       <Button onClick={handleCheckout} className="w-full py-3 text-lg">
                         <ClipboardList size={20} /> 确认提交订单 ({totalCartItems} 件)
                       </Button>
                    </Card>
+                   </div>
                )}
             </div>
         )}
@@ -643,22 +887,50 @@ const ClientAppMobile = ({ user, products, priceList, onPlaceOrder, orders }) =>
 
 const NewCustomerModal = ({ products, onSave, onClose }) => {
   const [newCustomer, setNewCustomer] = useState({ name: '', type: 'Chain Store', billing: '月结30天', address: '' });
-  const [prices, setPrices] = useState({});
+  const [productSettings, setProductSettings] = useState({});
 
-  const handlePriceChange = (productId, price) => {
-    const floatPrice = parseFloat(price);
-    setPrices(prev => {
-      const newPrices = { ...prev };
-      if (floatPrice > 0) newPrices[productId] = floatPrice;
-      else delete newPrices[productId];
-      return newPrices;
+  // 初始化商品设置
+  useEffect(() => {
+    const initialSettings = {};
+    products.forEach(p => {
+      initialSettings[p.id] = {
+        price: '',
+        alias: '',
+        specs: '',
+        isVisible: true
+      };
+    });
+    setProductSettings(initialSettings);
+  }, [products]);
+
+  // 处理商品设置变化
+  const handleProductSettingChange = (productId, field, value) => {
+    setProductSettings(prev => {
+      const newSettings = { ...prev };
+      newSettings[productId] = { ...newSettings[productId], [field]: value };
+      return newSettings;
     });
   };
   
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!newCustomer.name || !newCustomer.address) return;
-    onSave(newCustomer, prices);
+    
+    // 转换为所需格式
+    const processedSettings = {};
+    Object.entries(productSettings).forEach(([productId, settings]) => {
+      const price = parseFloat(settings.price);
+      if (price > 0 || settings.alias || settings.specs || !settings.isVisible) {
+        processedSettings[productId] = {
+          price: price || null,
+          alias: settings.alias || null,
+          specs: settings.specs || null,
+          isVisible: settings.isVisible
+        };
+      }
+    });
+    
+    onSave(newCustomer, processedSettings);
     onClose();
   };
   
@@ -701,17 +973,61 @@ const NewCustomerModal = ({ products, onSave, onClose }) => {
           </fieldset>
           
           <fieldset className="p-4 border border-gray-200 rounded-lg">
-             <legend className="text-sm font-bold text-gray-600 px-2 flex items-center gap-1"><DollarSign size={14}/> 专属价格设置 (留空则使用基准价)</legend>
-             <div className="space-y-3">
+             <legend className="text-sm font-bold text-gray-600 px-2 flex items-center gap-1"><DollarSign size={14}/> 商品个性化设置</legend>
+             <div className="space-y-4">
                {products.map(p => (
-                 <div key={p.id} className="flex items-center gap-4">
-                   <div className="w-1/2 flex items-center gap-2">
-                     <span className="text-xl">{p.image}</span>
-                     <span className="text-sm font-medium">{p.name}</span>
+                 <div key={p.id} className="border border-gray-100 rounded-lg p-3 bg-gray-50">
+                   <div className="flex items-center gap-3 mb-3">
+                     <span className="text-2xl">{p.image}</span>
+                     <div>
+                       <h4 className="font-medium text-sm">{p.name}</h4>
+                       <p className="text-xs text-gray-500">基准价: ¥{p.basePrice}</p>
+                     </div>
+                     <div className="ml-auto">
+                       <label className="flex items-center gap-2 text-xs font-bold text-gray-500">
+                         <input
+                           type="checkbox"
+                           checked={productSettings[p.id]?.isVisible}
+                           onChange={(e) => handleProductSettingChange(p.id, 'isVisible', e.target.checked)}
+                           className="rounded text-orange-500 focus:ring-orange-200"
+                         />
+                         展示该商品
+                       </label>
+                     </div>
                    </div>
-                   <div className="w-1/4 text-xs text-gray-500">基准价: ¥{p.basePrice.toFixed(2)}</div>
-                   <div className="w-1/4">
-                      <input type="number" step="0.01" min="0" onChange={(e) => handlePriceChange(p.id, e.target.value)} className="w-full border rounded-lg p-1.5 text-sm text-right outline-none focus:ring-2 focus:ring-orange-200" placeholder="专属价" />
+                   <div className="grid grid-cols-3 gap-3">
+                     <div>
+                       <label className="block text-xs font-bold text-gray-500 mb-1">专属价格</label>
+                       <input 
+                         type="number" 
+                         step="0.01" 
+                         min="0" 
+                         value={productSettings[p.id]?.price}
+                         onChange={(e) => handleProductSettingChange(p.id, 'price', e.target.value)} 
+                         className="w-full border rounded-lg p-1.5 text-sm text-right outline-none focus:ring-2 focus:ring-orange-200" 
+                         placeholder="专属价" 
+                       />
+                     </div>
+                     <div>
+                       <label className="block text-xs font-bold text-gray-500 mb-1">商品别名</label>
+                       <input 
+                         type="text" 
+                         value={productSettings[p.id]?.alias}
+                         onChange={(e) => handleProductSettingChange(p.id, 'alias', e.target.value)} 
+                         className="w-full border rounded-lg p-1.5 text-sm outline-none focus:ring-2 focus:ring-orange-200" 
+                         placeholder="如: 羊角包" 
+                       />
+                     </div>
+                     <div>
+                       <label className="block text-xs font-bold text-gray-500 mb-1">规格</label>
+                       <input 
+                         type="text" 
+                         value={productSettings[p.id]?.specs}
+                         onChange={(e) => handleProductSettingChange(p.id, 'specs', e.target.value)} 
+                         className="w-full border rounded-lg p-1.5 text-sm outline-none focus:ring-2 focus:ring-orange-200" 
+                         placeholder="如: 1个装" 
+                       />
+                     </div>
                    </div>
                  </div>
                ))}
@@ -730,26 +1046,54 @@ const OrderCreationModule = ({ products, customers, priceStrategies, onPlaceOrde
   const [selectedCustomerId, setSelectedCustomerId] = useState('');
   const [salesCart, setSalesCart] = useState({});
   const [message, setMessage] = useState('');
+  const [orderNotes, setOrderNotes] = useState('');
 
   const selectedCustomer = customers.find(c => c.id === parseInt(selectedCustomerId));
   const priceList = selectedCustomer ? priceStrategies[selectedCustomer.id] || {} : {};
 
-  const getProductPrice = (productId) => priceList[productId] || products.find(p => p.id === productId)?.basePrice || 0;
+  // 获取商品价格，兼容新旧价格列表格式
+  const getProductPrice = (productId) => {
+    const priceData = typeof priceList[productId] === 'object' ? priceList[productId] : { price: priceList[productId] };
+    return priceData.price || products.find(p => p.id === productId)?.basePrice || 0;
+  };
+  
+  // 获取商品别名，兼容新旧价格列表格式
+  const getProductAlias = (productId) => {
+    const product = products.find(p => p.id === productId);
+    const priceData = typeof priceList[productId] === 'object' ? priceList[productId] : {};
+    return priceData.alias || product?.name || '未知商品';
+  };
 
+  // 处理购物车数量变化
   const handleQtyChange = (productId, qty) => {
     setSalesCart(prev => {
       const newCart = { ...prev };
-      if (qty > 0) newCart[productId] = qty;
-      else delete newCart[productId];
+      const currentItem = newCart[productId] || { quantity: 0, notes: '' };
+      if (qty > 0) {
+        newCart[productId] = { ...currentItem, quantity: qty };
+      } else {
+        delete newCart[productId];
+      }
       return newCart;
     });
     setMessage('');
   };
+  
+  // 处理商品备注变化
+  const handleProductNotesChange = (productId, notes) => {
+    setSalesCart(prev => {
+      const newCart = { ...prev };
+      const currentItem = newCart[productId] || { quantity: 0, notes: '' };
+      newCart[productId] = { ...currentItem, notes: notes };
+      return newCart;
+    });
+  };
 
+  // 计算购物车总计
   const salesCartTotal = useMemo(() => {
-    return Object.entries(salesCart).reduce((sum, [pid, qty]) => {
+    return Object.entries(salesCart).reduce((sum, [pid, item]) => {
       const price = getProductPrice(parseInt(pid));
-      return sum + (price * qty);
+      return sum + (price * item.quantity);
     }, 0);
   }, [salesCart, priceList, products]);
 
@@ -762,17 +1106,28 @@ const OrderCreationModule = ({ products, customers, priceStrategies, onPlaceOrde
       customerName: selectedCustomer.name,
       items: salesCart,
       total: salesCartTotal,
-      deliveryDate: new Date(Date.now() + 86400000 * 2).toISOString().split('T')[0]
+      deliveryDate: new Date(Date.now() + 86400000 * 2).toISOString().split('T')[0],
+      notes: orderNotes
     });
 
-    setMessage(`✅ 已成功为 ${selectedCustomer.name} 创建订单，总额 ¥${salesCartTotal.toFixed(2)}。`);
+    setMessage(`✅ 已成功为 ${selectedCustomer.name} 创建订单，总额 ¥${salesCartTotal}。`);
     setSalesCart({});
     setSelectedCustomerId('');
+    setOrderNotes('');
   };
 
   return (
     <div className="space-y-6">
-      <h3 className="text-xl font-bold text-gray-800 border-b pb-2">销售代客下单</h3>
+      <div className="flex justify-between items-center">
+        <h3 className="text-xl font-bold text-gray-800">销售代客下单</h3>
+        <Button
+          onClick={() => alert('导入Excel功能开发中...')}
+          variant="outline"
+          className="text-sm"
+        >
+          <FileText size={16} /> 导入Excel出货单
+        </Button>
+      </div>
       <Card className="p-4 space-y-4">
         <label className="block text-sm font-bold text-gray-700">选择客户</label>
         <select className="w-full border rounded-lg p-3 text-sm outline-none focus:ring-2 focus:ring-orange-200" value={selectedCustomerId} onChange={(e) => { setSelectedCustomerId(e.target.value); setSalesCart({}); setMessage(''); }}>
@@ -792,32 +1147,64 @@ const OrderCreationModule = ({ products, customers, priceStrategies, onPlaceOrde
         <div className="p-4 space-y-3">
           {products.map(p => {
             const price = getProductPrice(p.id);
-            const cartQty = salesCart[p.id] || 0;
+            const alias = getProductAlias(p.id);
+            const cartItem = salesCart[p.id] || { quantity: 0, notes: '' };
             return (
-              <div key={p.id} className="grid grid-cols-4 items-center border-b pb-3 last:border-b-0 last:pb-0">
-                <div className="col-span-2 flex items-center gap-2">
-                    <span className="text-xl">{p.image}</span>
-                    <span className="text-sm font-medium">{p.name} 
-                        <span className="text-xs text-gray-400 font-normal"> (¥{p.basePrice.toFixed(2)})</span>
-                    </span>
+              <div key={p.id} className="border-b pb-3 last:border-b-0 last:pb-0">
+                <div className="grid grid-cols-4 items-center">
+                  <div className="col-span-2 flex items-center gap-2">
+                      <span className="text-xl">{p.image}</span>
+                      <div>
+                        <span className="text-sm font-medium">{alias} 
+                            <span className="text-xs text-gray-400 font-normal"> (¥{p.basePrice})</span>
+                        </span>
+                        {alias !== p.name && (
+                          <p className="text-xs text-gray-500">原名: {p.name}</p>
+                        )}
+                      </div>
+                  </div>
+                  <span className={`text-sm font-bold ${price !== p.basePrice ? 'text-orange-600' : 'text-gray-700'}`}>¥{price.toFixed(2)}</span>
+                  <div className="flex justify-end">
+                     <ProductQuantityInput 
+                        product={p} 
+                        price={price} 
+                        currentQty={cartItem.quantity} 
+                        onQtyChange={handleQtyChange} 
+                        isMobile={false} // 后台使用桌面样式
+                     />
+                  </div>
                 </div>
-                <span className={`text-sm font-bold ${price !== p.basePrice ? 'text-orange-600' : 'text-gray-700'}`}>¥{price.toFixed(2)}</span>
-                <div className="flex justify-end">
-                   <ProductQuantityInput 
-                      product={p} 
-                      price={price} 
-                      currentQty={cartQty} 
-                      onQtyChange={handleQtyChange} 
-                      isMobile={false} // 后台使用桌面样式
-                   />
+                <div className="mt-2 ml-12">
+                  <label className="block text-xs font-bold text-gray-500 mb-1">
+                    商品备注
+                  </label>
+                  <textarea
+                    value={cartItem.notes}
+                    onChange={(e) => handleProductNotesChange(p.id, e.target.value)}
+                    rows={2}
+                    className="w-full border rounded-lg p-2 text-sm outline-none focus:ring-2 focus:ring-orange-200"
+                    placeholder="输入商品备注..."
+                  />
                 </div>
               </div>
             );
           })}
         </div>
       </Card>
+      <Card className="p-4">
+        <label className="block text-sm font-bold text-gray-700 mb-1">
+          订单备注
+        </label>
+        <textarea
+          value={orderNotes}
+          onChange={(e) => setOrderNotes(e.target.value)}
+          rows={3}
+          className="w-full border rounded-lg p-2 text-sm outline-none focus:ring-2 focus:ring-orange-200"
+          placeholder="输入订单备注..."
+        />
+      </Card>
       <Card className="p-6 flex justify-between items-center bg-blue-50 border-blue-200">
-        <div className="text-xl font-bold text-gray-800">总计金额: <span className="text-orange-600 font-extrabold ml-2">¥{salesCartTotal.toFixed(2)}</span></div>
+        <div className="text-xl font-bold text-gray-800">总计金额: <span className="text-orange-600 font-extrabold ml-2">¥{salesCartTotal}</span></div>
         <Button onClick={handleSubmitOrder} disabled={!selectedCustomer || salesCartTotal === 0} className="py-3 px-8 text-lg"><Save size={20}/> 确认创建订单</Button>
       </Card>
     </div>
@@ -851,12 +1238,27 @@ const AdminDashboard = ({ products, setProducts, customers, setCustomers, priceS
     return customers.filter(c => c.name.toLowerCase().includes(query) || c.id.toString().includes(query));
   }, [customers, customerSearchQuery]);
 
-  const handleAddNewCustomer = (newCustomerData, newPrices) => {
+  const handleAddNewCustomer = (newCustomerData, newProductSettings) => {
     const maxId = customers.length > 0 ? Math.max(...customers.map(c => c.id)) : 100;
     const newId = maxId + 1;
     // 默认给新客户一个模式，例如 desktop
     setCustomers(prev => [...prev, { ...newCustomerData, id: newId, mode: 'desktop' }]);
-    setPriceStrategies(prev => ({ ...prev, [newId]: newPrices }));
+    
+    // 转换产品设置格式，移除空值
+    const processedSettings = {};
+    Object.entries(newProductSettings).forEach(([productId, settings]) => {
+      const cleanedSettings = {};
+      if (settings.price !== null && settings.price !== '') cleanedSettings.price = settings.price;
+      if (settings.alias) cleanedSettings.alias = settings.alias;
+      if (settings.specs) cleanedSettings.specs = settings.specs;
+      if (settings.isVisible !== undefined) cleanedSettings.isVisible = settings.isVisible;
+      
+      if (Object.keys(cleanedSettings).length > 0) {
+        processedSettings[productId] = cleanedSettings;
+      }
+    });
+    
+    setPriceStrategies(prev => ({ ...prev, [newId]: processedSettings }));
   };
   
   const handleSaveProduct = (e) => {
@@ -869,7 +1271,10 @@ const AdminDashboard = ({ products, setProducts, customers, setCustomers, priceS
       basePrice: parseFloat(formData.get('basePrice')),
       leadTime: parseInt(formData.get('leadTime')),
       description: formData.get('description'),
-      image: formData.get('image') || '📦', 
+      image: formData.get('image') || '📦',
+      alias: formData.get('alias'),
+      isVisible: formData.get('isVisible') === 'on',
+      notes: formData.get('notes'),
     };
     if (editingProduct.id) setProducts(prev => prev.map(p => p.id === newProduct.id ? newProduct : p));
     else setProducts(prev => [...prev, newProduct]);
@@ -981,7 +1386,7 @@ const AdminDashboard = ({ products, setProducts, customers, setCustomers, priceS
                     平均客单价
                   </div>
                   <div className="text-2xl font-bold mt-1">
-                    ¥{(orders.reduce((sum, order) => sum + order.total, 0) / orders.length).toFixed(2)}
+                    ¥{(orders.reduce((sum, order) => sum + order.total, 0) / orders.length)}
                   </div>
                 </Card>
                 {/* 热销产品数 */}
@@ -1223,21 +1628,74 @@ const AdminDashboard = ({ products, setProducts, customers, setCustomers, priceS
           )}
           {activeModule === 'createOrder' && <OrderCreationModule products={products} customers={customers} priceStrategies={priceStrategies} onPlaceOrder={onPlaceOrder} />}
           {activeModule === 'orders' && (
-            <Card className="overflow-hidden">
-              <table className="w-full text-left text-sm">
-                <thead className="bg-slate-50 border-b"><tr><th className="p-4">订单号</th><th className="p-4">客户</th><th className="p-4">总额</th><th className="p-4">状态</th><th className="p-4">操作</th></tr></thead>
-                <tbody className="divide-y">
-                  {orders.map(order => (
-                    <tr key={order.id} className="hover:bg-slate-50">
-                      <td className="p-4 font-mono text-xs">{order.id}</td><td className="p-4">{order.customerName}</td><td className="p-4 font-bold">¥{order.total.toFixed(2)}</td>
-                      <td className="p-4"><span className={`px-2 py-1 rounded text-xs font-bold ${getStatusColor(order.status)}`}>{order.status}</span></td>
-                      {order.status === 'Pending' && <td className="p-4"> <Button variant="primary" className="py-1 px-3 text-xs" onClick={() => updateStatus(order.id, 'Production')}>确认排产</Button></td>}
-                      {order.status === 'Production' && <td className="p-4"> <Button variant="danger" className="py-1 px-3 text-xs" onClick={() => updateStatus(order.id, 'Completed')}>发货完成</Button></td>}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </Card>
+            <div className="space-y-4">
+              <div className="flex justify-between items-center">
+                <h3 className="text-xl font-bold text-gray-800">订单管理</h3>
+                <Button
+                  onClick={() => {
+                    // 实现导出到安仕达Excel的逻辑
+                    const exportToAnShiDaExcel = (orders, products) => {
+                      // 生成Excel文件的逻辑，这里使用简单的CSV格式模拟
+                      let csvContent = "订单号,客户名称,订单金额,订单状态,商品名称,数量,单价,商品备注\n";
+                      
+                      orders.forEach(order => {
+                        Object.entries(order.items).forEach(([pid, item]) => {
+                          const productId = parseInt(pid);
+                          const product = products.find(p => p.id === productId);
+                          const quantity = typeof item === 'object' ? item.quantity : item;
+                          const notes = typeof item === 'object' ? item.notes || '' : '';
+                          const price = product ? order.total / quantity : 0;
+                          
+                          csvContent += `${order.id},${order.customerName},${order.total},${order.status},${product?.name || '未知商品'},${quantity},${price},${notes}\n`;
+                        });
+                      });
+                      
+                      // 创建并下载文件
+                      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                      const link = document.createElement('a');
+                      const url = URL.createObjectURL(blob);
+                      link.setAttribute('href', url);
+                      link.setAttribute('download', `安仕达订单导出_${new Date().toISOString().split('T')[0]}.csv`);
+                      link.style.visibility = 'hidden';
+                      document.body.appendChild(link);
+                      link.click();
+                      document.body.removeChild(link);
+                    };
+                    
+                    exportToAnShiDaExcel(orders, products);
+                  }}
+                  variant="primary"
+                  className="text-sm"
+                >
+                  <FileText size={16} /> 导出到安仕达Excel
+                </Button>
+              </div>
+              <Card className="overflow-hidden">
+                <table className="w-full text-left text-sm">
+                  <thead className="bg-slate-50 border-b"><tr><th className="p-4">订单号</th><th className="p-4">客户</th><th className="p-4">总额</th><th className="p-4">状态</th><th className="p-4">操作</th><th className="p-4">详情</th></tr></thead>
+                  <tbody className="divide-y">
+                    {orders.map(order => (
+                      <tr key={order.id} className="hover:bg-slate-50">
+                        <td className="p-4 font-mono text-xs">{order.id}</td>
+                        <td className="p-4">{order.customerName}</td>
+                        <td className="p-4 font-bold">¥{order.total}</td>
+                        <td className="p-4"><span className={`px-2 py-1 rounded text-xs font-bold ${getStatusColor(order.status)}`}>{order.status}</span></td>
+                        {order.status === 'Pending' && <td className="p-4"> <Button variant="primary" className="py-1 px-3 text-xs" onClick={() => updateStatus(order.id, 'Production')}>确认排产</Button></td>}
+                        {order.status === 'Production' && <td className="p-4"> <Button variant="danger" className="py-1 px-3 text-xs" onClick={() => updateStatus(order.id, 'Completed')}>发货完成</Button></td>}
+                        {order.status === 'Completed' && <td className="p-4"> - </td>}
+                        <td className="p-4">
+                          <Button variant="outline" className="py-1 px-3 text-xs" onClick={() => {
+                            const selectedOrder = orders.find(o => o.id === order.id);
+                            // 显示订单详情
+                            alert(`订单详情: ${order.id}\n客户: ${order.customerName}\n总额: ¥${order.total}\n状态: ${order.status}`);
+                          }}>查看详情</Button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </Card>
+            </div>
           )}
        {activeModule === "customers" && (
             <div className="space-y-6">
@@ -1312,16 +1770,26 @@ const AdminDashboard = ({ products, setProducts, customers, setCustomers, priceS
                               );
                               return product ? (
                                 <div
-                                  key={pid}
-                                  className="flex justify-between border-b border-gray-100 last:border-0 pb-1 last:pb-0"
-                                >
-                                  <span>
-                                    {product.image} {product.name}
-                                  </span>
-                                  <span className="font-mono text-orange-600 font-bold">
-                                    ¥{price.toFixed(2)}
-                                  </span>
-                                </div>
+                                    key={pid}
+                                    className="flex justify-between border-b border-gray-100 last:border-0 pb-1 last:pb-0"
+                                  >
+                                    <span>
+                                      {product.image} {product.name}
+                                      {product.alias && (
+                                        <span className="text-xs text-gray-500 ml-1">
+                                          ({product.alias})
+                                        </span>
+                                      )}
+                                      {!product.isVisible && (
+                                        <span className="text-xs bg-gray-100 text-gray-500 px-1 rounded ml-1">
+                                          已隐藏
+                                        </span>
+                                      )}
+                                    </span>
+                                    <span className="font-mono text-orange-600 font-bold">
+                                      ¥{(typeof price === 'object' ? price.price : parseFloat(price))?.toFixed(2) || '0.00'}
+                                    </span>
+                                  </div>
                               ) : null;
                             }
                           )}
@@ -1388,7 +1856,7 @@ const AdminDashboard = ({ products, setProducts, customers, setCustomers, priceS
                         </div>
                         <div className="text-right">
                           <div className="text-orange-600 font-bold font-mono">
-                            ¥{product.basePrice.toFixed(2)}
+                            ¥{product.basePrice}
                           </div>
                           <div className="text-xs text-gray-400">基准价</div>
                         </div>
@@ -1518,6 +1986,44 @@ const AdminDashboard = ({ products, setProducts, customers, setCustomers, priceS
                     rows={3}
                     className="w-full border rounded-lg p-2 text-sm outline-none focus:ring-2 focus:ring-orange-200"
                     placeholder="输入产品描述..."
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold text-gray-500 mb-1">
+                      商品别名
+                    </label>
+                    <input
+                      name="alias"
+                      defaultValue={editingProduct.alias}
+                      className="w-full border rounded-lg p-2 text-sm focus:ring-2 focus:ring-orange-200 outline-none"
+                      placeholder="如: 羊角包"
+                    />
+                  </div>
+                  <div className="flex items-end">
+                    <label className="flex items-center gap-2 text-xs font-bold text-gray-500">
+                      <input
+                        type="checkbox"
+                        name="isVisible"
+                        defaultChecked={editingProduct.isVisible !== false}
+                        className="rounded text-orange-500 focus:ring-orange-200"
+                      />
+                      展示该商品
+                    </label>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-gray-500 mb-1">
+                    商品备注
+                  </label>
+                  <textarea
+                    name="notes"
+                    defaultValue={editingProduct.notes}
+                    rows={2}
+                    className="w-full border rounded-lg p-2 text-sm outline-none focus:ring-2 focus:ring-orange-200"
+                    placeholder="输入商品备注..."
                   />
                 </div>
 
