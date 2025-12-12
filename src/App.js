@@ -215,8 +215,8 @@ const ProductQuantityInput = ({ product, price, currentQty, onQtyChange, isMobil
 const ProductCard = ({ product, price, cart, onCartChange, isMobile = false }) => {
   const cartItem = cart[product.id] || { quantity: 0, notes: '' };
   
-  const handleQtyChange = (newQty) => {
-    onCartChange(product.id, { ...cartItem, quantity: newQty });
+  const handleQtyChange = (productId, newQty) => {
+    onCartChange(productId, { ...cartItem, quantity: newQty });
   };
   
   const handleNotesChange = (e) => {
@@ -531,7 +531,7 @@ const ClientAppDesktop = ({ user, products, priceList, onPlaceOrder, orders }) =
 
   const [orderNotes, setOrderNotes] = useState('');
 
-  const CartSummary = () => (
+  const CartSummary = useMemo(() => (
      <Card className="p-6 h-fit sticky top-20 shadow-lg border-b-4 border-orange-500">
         <h3 className="font-bold text-lg text-gray-700 border-b pb-3 mb-4">订单信息摘要 ({totalCartItems} 件)</h3>
         {cartItemsArray.length === 0 ? (
@@ -580,7 +580,7 @@ const ClientAppDesktop = ({ user, products, priceList, onPlaceOrder, orders }) =
           <ClipboardList size={20} /> 提交订单
         </Button>
       </Card>
-  );
+  ), [cartItemsArray, totalCartItems, cartTotal, user.address, orderNotes, handleCheckout]);
 
   return (
     <div className="flex h-full bg-gray-50">
@@ -658,7 +658,7 @@ const ClientAppDesktop = ({ user, products, priceList, onPlaceOrder, orders }) =
               
               {/* 右侧：购物车/结算摘要 */}
               <div className="lg:col-span-1">
-                  <CartSummary />
+                  {CartSummary}
               </div>
             </div>
           )}
